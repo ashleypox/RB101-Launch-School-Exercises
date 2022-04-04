@@ -1,0 +1,48 @@
+
+en:
+  welcome: 'Welcome to calculator! Enter your name.'
+  hello: 'Hello, '
+  invalid_name: 'Please enter a valid name.'
+  input_1: "Enter your first number."
+  input_2: 'Enter your second number.'
+  invalid_num: 'Oops! Invalid number. Please enter a valid number.'
+  invalid_option: 'Please enter a valid option: 1, 2, 3, or 4.'
+  begin_again: 'Do you want to perform another calculation? Type Y for yes.'
+  goodbye: 'Thanks for using calculator!'
+  op_one: 'Adding...'
+  op_two: "Subtracting..."
+  op_three: "Multiplying..."
+  op_four: "Dividing..."
+  op_prompt: |
+    What operation should we perform? 
+    1) add 
+    2) subtract 
+    3) multiply 
+    4) divide
+  divide_by_zero: "You cannot divide by zero."
+  undefined: 'undefined'
+  result_msg: 'The result is '
+
+es:
+  welcome: "Bienvenido a la calculadora! Entre su nombre:"
+  hello: 'Hello, '
+  invalid_name: "Asegúrese de entrar un nombre válido."
+  input_1: "Enter your first number."
+  input_2: 'Enter your second number.'
+  invalid_num: 'Oops! Invalid number. Please enter a valid number.'
+  invalid_option: 'Please enter a valid option: 1, 2, 3, or 4.'
+  begin_again: 'Do you want to perform another calculation? Type Y for yes.'
+  goodbye: 'Thanks for using calculator!'
+  op_one: 'Adding...'
+  op_two: "Subtracting..."
+  op_three: "Multiplying..."
+  op_four: "Dividing..."
+  op_prompt: |
+    What operation should we perform? 
+    1) add 
+    2) subtract 
+    3) multiply 
+    4) divide
+  divide_by_zero: "You cannot divide by zero."
+  undefined: 'undefined'
+  result_msg: 'The result is '

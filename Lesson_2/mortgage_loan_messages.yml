@@ -1,0 +1,8 @@
+welcome: 'Welcome to mortgage calculator.'
+loan_amt_input: 'Please enter your loan amount.'
+invalid_number: 'Invalid number. Please enter a valid number.'
+apr_input: 'Please enter your Annual Percentage Rate (APR).'
+loan_dur_input: 'Please enter the loan duration (in months):'
+monthly_payment_result: 'Your monthly payment will be '
+calculate_again: "Would you like to calculate another monthly payment? Type 'Y' for yes."
+goodbye: 'Thanks for using mortgage calculator!'

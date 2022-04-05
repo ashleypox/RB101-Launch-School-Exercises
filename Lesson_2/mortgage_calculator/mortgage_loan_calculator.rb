@@ -19,14 +19,15 @@ def valid_number?(num)
 end
 
 def remove_spec_char(str)
-  str.gsub!(/[$,]/, '')
+  str.gsub!(/[$,%]/, '')
 end
 
 def money_format(num)
   "$#{num.round(2)}"
 end
 
-def get_input(msg, )
+def get_input(msg)
+  input = ''
   loop do
     prompt(MESSAGES[msg])
     input = gets.chomp
@@ -39,61 +40,31 @@ def get_input(msg, )
       prompt(MESSAGES['invalid_number'])
     end
   end
+  input
 end
 
 # Welcome
 prompt(MESSAGES['welcome'])
+prompt(MESSAGES['prepare'])
 puts "---------------------------------"
 
 # main loop
 loop do
   # determine loan amount
-  loan_amount = ''
-  loop do
-    prompt(MESSAGES['loan_amt_input'])
-    loan_amount = gets.chomp
-
-    # removes $ and , from loan input
-    money_unformat(loan_amount)
-
-    if valid_number?(loan_amount)
-      break
-    else
-      prompt(MESSAGES['invalid_number'])
-    end
-  end
+  loan_amount = get_input('loan_amt_input')
 
   # determine APR
-  apr = ''
-  loop do
-    prompt(MESSAGES['apr_input'])
-    apr = gets.chomp
-    if valid_number?(apr)
-      break
-    else
-      prompt(MESSAGES['invalid_number'])
-    end
-  end
+  apr = get_input('apr_input')
 
   # determine loan duration in months
-  loan_duration = ''
-  loop do
-    prompt(MESSAGES['loan_dur_input'])
-    loan_duration = gets.chomp
-    if valid_number?(loan_duration)
-      break
-    else
-      prompt(MESSAGES['invalid_number'])
-    end
-  end
+  loan_duration = get_input('loan_dur_input')
 
   # calculate:
   annual_interest = apr.to_f / 100
   monthly_interest = annual_interest / 12
 
-  monthly_payment = loan_amount.to_f *
-                    (monthly_interest / 
-                    (1 - (1 + monthly_interest)**(-loan_duration.to_f)))
+  monthly_payment = loan_amount.to_f * (monthly_interest / (1 -
+                    (1 + monthly_interest)**(-loan_duration.to_f)))
 
   # display result
   prompt(MESSAGES['monthly_payment_result'] + money_format(monthly_payment))

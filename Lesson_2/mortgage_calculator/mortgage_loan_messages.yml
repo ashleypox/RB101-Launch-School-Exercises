@@ -3,7 +3,7 @@ prepare: 'You will need to know your loan amount, APR, and loan duration to comp
 loan_amt_input: 'Enter your loan amount.'
 invalid_number: 'Invalid number. Please enter a valid number.'
 apr_input: 'Enter your Annual Percentage Rate (APR).'
-loan_dur_input: 'Enter the loan duration (in months):'
+loan_dur_input: 'Enter the loan duration (in years):'
 monthly_payment_result: 'Your monthly payment will be '
 calculate_again: "Would you like to calculate another monthly payment? Type 'Y' for yes."
 goodbye: 'Thanks for using mortgage calculator!'

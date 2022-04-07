@@ -56,15 +56,16 @@ loop do
   # determine APR
   apr = get_input('apr_input')
 
-  # determine loan duration in months
-  loan_duration = get_input('loan_dur_input')
+  # determine loan duration in years
+  loan_duration_yr = get_input('loan_dur_input')
+  loan_duration_mth = loan_duration_yr.to_f * 12
 
   # calculate:
   annual_interest = apr.to_f / 100
   monthly_interest = annual_interest / 12
 
   monthly_payment = loan_amount.to_f * (monthly_interest / (1 -
-                    (1 + monthly_interest)**(-loan_duration.to_f)))
+                    (1 + monthly_interest)**(-loan_duration_mth.to_f)))
 
   # display result
   prompt(MESSAGES['monthly_payment_result'] + money_format(monthly_payment))

@@ -1,24 +1,28 @@
 # Rock Paper Scissors game
-VALID_CHOICES = ['rock', 'paper', 'scissors']
+VALID_CHOICES = %w(rock paper scissors)
 
+# methods 
 def prompt(message)
   puts("=> #{message}")
 end
 
+def win?(first, second)
+  (first == 'rock' && second == 'scissors') ||
+    (first == 'paper' && second == 'rock') ||
+    (first == 'scissors' && second == 'paper')
+end
+
 def display_results(player, computer)
-  if (player == 'rock' && computer == 'scissors') ||
-     (player == 'paper' && computer == 'rock') ||
-     (player == 'scissors' && computer == 'paper')
+  if win?(player, computer)
     prompt("You win!")
-  elsif (computer == 'rock' && player == 'scissors') ||
-        (computer == 'paper' && player == 'rock') ||
-        (computer == 'scissors' && player == 'paper')
+  elsif win?(computer, player)
     prompt("You lost.")
   else
     prompt("It's a tie!")
   end
 end
 
+# main loop 
 loop do
   choice = ''
   loop do
@@ -37,12 +41,9 @@ loop do
   display_results(choice, computer_choice)
   prompt("You chose #{choice}, and the computer chose #{computer_choice}.")
 
-
-
   prompt("Do you want to play again? Enter 'y' for yes.")
   answer = gets.chomp
   break unless answer.downcase == 'y'
 end
 
 prompt("Thanks for playing! Goodbye.")
-

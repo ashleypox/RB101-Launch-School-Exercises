@@ -14,10 +14,9 @@ end
 
 # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
 def display_board(brd)
-  system 'clear'
-  puts "You are the #{PLAYER_MARKER + "'s"}."
-  puts "The computer is the #{COMP_MARKER + "'s"}."
-  puts "First to 5 points wins!"
+  #system 'clear'
+  puts "You are #{PLAYER_MARKER + "'s"}."
+  puts "The computer is #{COMP_MARKER + "'s"}."
   puts ""
   puts "     |     |     "
   puts "  #{brd[1]}  |  #{brd[2]}  |  #{brd[3]}  "
@@ -69,7 +68,17 @@ def player_places_piece!(brd)
 end
 
 def comp_places_piece!(brd)
-  square = empty_squares(brd).sample
+  square = nil
+
+  if immediate_threat?(brd, COMP_MARKER) == true
+    square = find_threat(brd, COMP_MARKER)
+  elsif immediate_threat?(brd, PLAYER_MARKER) == true
+    square = find_threat(brd, PLAYER_MARKER)
+  else
+    square = empty_squares(brd).sample
+  end
+
+  puts "COMP CHOSE #{square}"
   brd[square] = COMP_MARKER
 end
 
@@ -102,8 +111,40 @@ def update_score(brd, arr)
   end
 end
 
+def immediate_threat?(brd, marker)
+  WINNING_LINES.each do |line|
+    if brd.values_at(*line).count(marker) == 2 && brd.values_at(*line).count(EMPTY_MARKER) == 1 
+      puts "near win detected"
+      return true
+    else
+      false
+    end
+  end
+end
+
+
+def find_threat(brd, marker)
+  threat = []
+
+  threat_line = WINNING_LINES.select do |line|
+    brd.values_at(*line).count(marker) == 2 # returns the array the threat is in 
+  end
+
+  threat_line.each do |inner_arr|
+    inner_arr.each do |num|
+      threat << num if brd[num] == EMPTY_MARKER
+    end
+  end  
+  
+  threat[0]
+end
+
 # main loop
 loop do
+  # Welcome message and optional rules
+  prompt "Welcome to Tic Tac Toe!"
+  prompt "First to 5 points wins!"
+  
   # Display empty board
   board = intialize_board
   display_board(board)
@@ -133,6 +174,7 @@ loop do
         cont = gets.chomp
         break if cont
       end
+      
 
       comp_places_piece!(board)
       display_board(board)

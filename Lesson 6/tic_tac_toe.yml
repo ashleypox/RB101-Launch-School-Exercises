@@ -1,0 +1,26 @@
+heading: === You are X's. The computer is O's. ===
+invalid_selection: Invalid selection. Choose from the specified options.
+welcome: |
+  === Welcome to Tic Tac Toe! The first to 5 points wins. ===
+  === Would you like an explaination of the rules? (y or n) ===
+
+rules: | 
+  ================================================================
+
+  * The game is played on a 3 x 3 grid.
+  * Each player is assigned a marker. Once per turn, 
+    the player can place a marker in a square of the grid.
+  * The first player to mark three squares in a row wins - 
+    up, down, across, diagonally, or otherwise!
+  * If all 9 squares are filled with no winner, the game is a tie.
+  * The first to win 5 rounds wins the game.
+
+  =================== Press enter to continue. ===================
+
+first?: |
+  === Do you want to go first, second, or let the computer decide? 
+  === (type 'y' to go first, 'n' to go second, or 'r' for random selection)
+
+next_game: Press enter to begin the next game.
+
+tie: "It's a cat's game!"

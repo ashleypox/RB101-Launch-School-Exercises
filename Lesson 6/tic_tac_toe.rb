@@ -1,22 +1,24 @@
-require 'pry'
+require 'yaml'
 
 # contstants
+MESSAGES = YAML.load_file('tic_tac_toe.yml')
+
 EMPTY_MARKER = ' '
 PLAYER_MARKER = 'X'
 COMP_MARKER = 'O'
 WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + # rows
                 [[1, 4, 7], [2, 5, 8], [3, 6, 9]] + # columns
                 [[1, 5, 9], [3, 5, 7]] # diagonals
+
 # methods
 def prompt(str)
-  puts "==> #{str}"
+  puts "=== #{str}"
 end
 
-# rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+# rubocop:disable Metrics/AbcSize
 def display_board(brd)
-  #system 'clear'
-  puts "You are #{PLAYER_MARKER + "'s"}."
-  puts "The computer is #{COMP_MARKER + "'s"}."
+  system 'clear'
+  puts MESSAGES['heading']
   puts ""
   puts "     |     |     "
   puts "  #{brd[1]}  |  #{brd[2]}  |  #{brd[3]}  "
@@ -31,7 +33,7 @@ def display_board(brd)
   puts "     |     |     "
   puts ''
 end
-# rubocop:enable Metrics/MethodLength, Metrics/AbcSize
+# rubocop:enable Metrics/AbcSize
 
 def intialize_board
   new_board = {}
@@ -51,7 +53,7 @@ def joinor(arr)
   end
 end
 
-def player_places_piece!(brd)
+def player_places(brd)
   square = ''
 
   loop do
@@ -60,26 +62,53 @@ def player_places_piece!(brd)
     if empty_squares(brd).include?(square)
       break
     else
-      prompt "Invalid selection."
+      prompt(MESSAGES['invalid_selection'])
     end
   end
 
   brd[square] = PLAYER_MARKER
 end
 
-def comp_places_piece!(brd)
-  square = nil
+def comp_places(brd)
+  square = if immediate_threat?(brd, COMP_MARKER) == true
+             find_threat(brd, COMP_MARKER)
+           elsif immediate_threat?(brd, PLAYER_MARKER) == true
+             find_threat(brd, PLAYER_MARKER)
+           elsif empty_squares(brd).include?(5)
+             5
+           else
+             empty_squares(brd).sample
+           end
 
-  if immediate_threat?(brd, COMP_MARKER) == true
-    square = find_threat(brd, COMP_MARKER)
-  elsif immediate_threat?(brd, PLAYER_MARKER) == true
-    square = find_threat(brd, PLAYER_MARKER)
-  else
-    square = empty_squares(brd).sample
-  end
-
-  puts "COMP CHOSE #{square}"
   brd[square] = COMP_MARKER
+end
+
+def places_piece!(user, brd)
+  if user == 'player'
+    player_places(brd)
+  elsif user == 'comp'
+    comp_places(brd)
+  end
+end
+
+def game_loop(user1, user2, brd, scr)
+  loop do
+    # first turn
+    places_piece!(user1, brd)
+    display_board(brd)
+    if end_game?(brd, scr)
+      prompt(MESSAGES['next_game'])
+      break if gets.chomp
+    end
+
+    # second user turn
+    places_piece!(user2, brd)
+    display_board(brd)
+    if end_game?(brd, scr)
+      prompt(MESSAGES['next_game'])
+      break if gets.chomp
+    end
+  end
 end
 
 def board_full?(brd)
@@ -113,8 +142,8 @@ end
 
 def immediate_threat?(brd, marker)
   WINNING_LINES.each do |line|
-    if brd.values_at(*line).count(marker) == 2 && brd.values_at(*line).count(EMPTY_MARKER) == 1 
-      puts "near win detected"
+    if brd.values_at(*line).count(marker) == 2 &&
+       brd.values_at(*line).count(EMPTY_MARKER) == 1
       return true
     else
       false
@@ -122,85 +151,77 @@ def immediate_threat?(brd, marker)
   end
 end
 
-
 def find_threat(brd, marker)
   threat = []
-
+  # returns the array the threat is in
   threat_line = WINNING_LINES.select do |line|
-    brd.values_at(*line).count(marker) == 2 # returns the array the threat is in 
+    brd.values_at(*line).count(marker) == 2
   end
-
+  # returns the number position of the threat
   threat_line.each do |inner_arr|
     inner_arr.each do |num|
       threat << num if brd[num] == EMPTY_MARKER
     end
-  end  
-  
+  end
+
   threat[0]
 end
 
-# main loop
+def end_game?(brd, scr)
+  if winner?(brd)
+    update_score(brd, scr)
+    prompt "#{detect_winner(brd)} won!"
+    true
+  elsif board_full?(brd)
+    update_score(brd, scr)
+    prompt(MESSAGES['tie'])
+    true
+  end
+end
+
+def current_score(scr)
+  "PLAYER: #{scr[0]}, COMPTUER: #{scr[1]}, TIES: #{scr[2]}"
+end
+
+# Welcome message and rules
+puts(MESSAGES['welcome'])
+display_rules = gets.chomp
+
+if display_rules.start_with?('y')
+  puts(MESSAGES['rules'])
+  gets.chomp
+end
+
+# Main loop
 loop do
-  # Welcome message and optional rules
-  prompt "Welcome to Tic Tac Toe!"
-  prompt "First to 5 points wins!"
-  
-  # Display empty board
-  board = intialize_board
-  display_board(board)
+  # initialize (or reset) score
   score = [0, 0, 0]
 
-  # score tracking loop
+  # begin play-to-5-wins
   loop do
     board = intialize_board
     display_board(board)
-    prompt "The current score is PLAYER: #{score[0]}, COMPTUER: #{score[1]}, TIES: #{score[2]}"
+    prompt("The current score is #{current_score(score)}.")
 
-    # main game
-    loop do
-      player_places_piece!(board)
-      display_board(board)
+    # who goes first?
+    puts(MESSAGES['first?'])
+    first_move = gets.chomp.downcase
+    first_move = ['y', 'n'].sample if first_move != ('y' || 'n')
 
-      if winner?(board)
-        update_score(board, score)
-        prompt "#{detect_winner(board)} won!"
-        prompt "Press any key to start next game."
-        cont = gets.chomp
-        break if cont
-      elsif board_full?(board)
-        update_score(board, score)
-        prompt "It's a tie!"
-        prompt "Press any key to start next game."
-        cont = gets.chomp
-        break if cont
-      end
-      
-
-      comp_places_piece!(board)
-      display_board(board)
-
-      if winner?(board)
-        update_score(board, score)
-        prompt "#{detect_winner(board)} won!"
-        prompt "Press any key to start next game."
-        cont = gets.chomp
-        break if cont
-      elsif board_full?(board)
-        update_score(board, score)
-        prompt "It's a tie!"
-        prompt "Press any key to start next game."
-        cont = gets.chomp
-        break if cont
-      end
+    if first_move.start_with?('y')
+      game_loop('player', 'comp', board, score)
+    else
+      game_loop('comp', 'player', board, score)
     end
-    
+
+    # 5 wins?
     if score[0] == 5 || score[1] == 5
-      prompt "The final score is PLAYER: #{score[0]}, COMPTUER: #{score[1]}, TIES: #{score[2]}"
+      prompt("The final score is #{current_score(score)}.")
       break
     end
   end
 
-  prompt "Do you want to play again? (y or n)"
+  prompt(MESSAGES['play_again'])
   answer = gets.chomp.downcase
   break unless answer.start_with?('y')
 end

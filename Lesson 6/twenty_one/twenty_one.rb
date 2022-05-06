@@ -9,6 +9,9 @@ CARDS_NO_SUIT = {
 }
 
 # methods
+def prompt(str)
+  puts "==> #{str}"
+end
 
 def sort_into_suits(suit_str, cards) # new hash, labels with suit
   cards.transform_keys do |key|
@@ -33,32 +36,63 @@ end
 def deal_card!(deck)
   card = deck.keys.sample
   deck.delete(card)
-  
+
   card
 end
 
-def value_of(cards)
+def to_value_array(cards)
   int_arr = []
+  ace_arr = []
 
-  for card in cards
+  cards.each do |card|
     card_key = remove_suit(card)
-    p card_key
-    CARDS_NO_SUIT.each {|key, value| (int_arr << value) if (key == card_key)}
+
+    CARDS_NO_SUIT.each do |k, v|
+      if card_key == 'Ace'
+        ace_arr << v
+      elsif k == card_key
+        int_arr << v
+      end
+    end
   end
 
-  int_arr.sum
+  [int_arr, ace_arr]
+end
+
+def value_of(cards)
+  int_arr, ace_arr = to_value_array(cards)
+
+  if int_arr.sum <= 10 && ace_arr.flatten.include?(1)
+    int_arr.sum + 11
+  elsif int_arr.sum > 10 && ace_arr.flatten.include?(1)
+    int_arr.sum + 1
+  else
+    int_arr.sum
+  end
 end
 
 def bust?(cards)
-  true if value_of(cards) > 21
+  value_of(cards) > 21
 end
 
 def evaluate_win(player_cards, comp_cards)
-  
+  if bust?(player_cards)
+    'Computer wins.' if bust?(comp_cards) == false
+    'Both bust.' if bust?(comp_cards)
+  elsif bust?(comp_cards)
+    'Player wins!'
+  elsif value_of(player_cards) == value_of(comp_cards)
+    "It's a draw."
+  elsif value_of(player_cards) > value_of(comp_cards)
+    'Player wins!'
+  else
+    'Computer wins.'
+  end
 end
 
 # main
 loop do
+  # new game set up
   deck = initialize_deck
   player_cards = []
   comp_cards = []
@@ -69,39 +103,47 @@ loop do
   player_cards << deal_card!(deck)
   player_cards << deal_card!(deck)
 
-  puts "Dealer has: #{comp_cards[0]} and an unknown card."
-  puts "You have: #{player_cards}."
-  puts "Hit or stay? (type h or s)"
-  answer = gets.chomp.downcase
+  prompt "Dealer has: #{comp_cards[0]} and an unknown card."
+  prompt "You have: #{player_cards.join(', ')}."
 
-  if answer == 'h'
-    player_cards.append(deal_card!(deck))
-    puts "You were dealt #{player_cards[-1]}."
-    p player_cards
-    break if bust?(player_cards)
+  # player hit-or-stay
+  loop do
+    prompt "Hit or stay? (type h or s)"
+    answer = gets.chomp.downcase
+
+    if answer == 'h'
+      player_cards.append(deal_card!(deck))
+      prompt "You were dealt #{player_cards[-1]}."
+      prompt "You are now holding: #{player_cards.join(', ')}"
+
+      if bust?(player_cards)
+        prompt "Bust!"
+        break
+      end
+    elsif answer == 's'
+      break
+    end
   end
+
+  # computer hit-or-stay
+  loop do
+    if value_of(comp_cards) <= 17
+      comp_cards << deal_card!(deck)
+    else
+      break
+    end
+  end
+
+  # game results
+  prompt "Computer is holding: #{comp_cards.join(', ')}"
+  prompt "Player score is #{value_of(player_cards)}."
+  prompt "Computer score is #{value_of(comp_cards)}."
+  prompt evaluate_win(player_cards, comp_cards)
+
+  # play again?
+  prompt "Do you want to play again?"
+  answer = gets.chomp.downcase
+  break unless answer.start_with?('y')
 end
 
-
-
-
-
-
-
-=begin
-2. Deal cards to player and dealer
-  - cant deal the same card twice until deck is re-initalized!
-  - need to remove cards from playable deck as they are selected
-
-3. Player turn: hit or stay
-  - repeat until bust or "stay"
-
-4. If player bust, dealer wins.
-
-5. Dealer turn: hit or stay
-  - repeat until total >= 17
-
-6. If dealer bust, player wins.
-
-7. Compare cards and declare winner.
-=end
+prompt "Thanks for playing Twenty-one! Goodbye!"

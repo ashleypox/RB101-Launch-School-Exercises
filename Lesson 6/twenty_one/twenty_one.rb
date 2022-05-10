@@ -8,6 +8,8 @@ CARDS_NO_SUIT = {
   'King' => 10
 }
 
+LINE = '========================================='
+
 # methods
 def prompt(str)
   puts "==> #{str}"
@@ -77,8 +79,11 @@ end
 
 def evaluate_win(player_cards, comp_cards)
   if bust?(player_cards)
-    'Computer wins.' if bust?(comp_cards) == false
-    'Both bust.' if bust?(comp_cards)
+    if bust?(comp_cards) == false
+      'Computer wins.' 
+    elsif bust?(comp_cards)
+      'Both bust.'
+    end
   elsif bust?(comp_cards)
     'Player wins!'
   elsif value_of(player_cards) == value_of(comp_cards)
@@ -105,6 +110,7 @@ loop do
 
   prompt "Dealer has: #{comp_cards[0]} and an unknown card."
   prompt "You have: #{player_cards.join(', ')}."
+  puts LINE
 
   # player hit-or-stay
   loop do
@@ -115,9 +121,11 @@ loop do
       player_cards.append(deal_card!(deck))
       prompt "You were dealt #{player_cards[-1]}."
       prompt "You are now holding: #{player_cards.join(', ')}"
+      puts LINE
 
       if bust?(player_cards)
         prompt "Bust!"
+        puts LINE
         break
       end
     elsif answer == 's'
@@ -136,9 +144,10 @@ loop do
 
   # game results
   prompt "Computer is holding: #{comp_cards.join(', ')}"
-  prompt "Player score is #{value_of(player_cards)}."
   prompt "Computer score is #{value_of(comp_cards)}."
+  prompt "Player score is #{value_of(player_cards)}."
   prompt evaluate_win(player_cards, comp_cards)
+  puts LINE
 
   # play again?
   prompt "Do you want to play again?"

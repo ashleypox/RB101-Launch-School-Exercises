@@ -1,0 +1,3 @@
+The %{adjective} %{noun} %{adverb}
+%{verb}, and the %{adjective} %{noun}
+%{adverb} %{verb} at the park. 
